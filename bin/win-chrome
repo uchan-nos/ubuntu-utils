@@ -1,3 +1,4 @@
 #!/bin/sh
-WINPATH="file:///$(wslpath -m ${1})"
+FILE=${1:-/etc/lsb-releaes}
+WINPATH="file:///$(wslpath -m ${FILE})"
 /mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe $WINPATH
