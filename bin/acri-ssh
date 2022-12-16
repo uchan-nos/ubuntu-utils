@@ -1,0 +1,11 @@
+#!/bin/sh -eu
+
+if [ $# -lt 1 ]
+then
+  echo "Usage: $0 PORT_FORWARD_HOST"
+  exit 1
+fi
+
+PORT_FORWARD_HOST=$1
+LOCAL_PORT=${2:-13389}
+ssh u_chan@gw.acri.c.titech.ac.jp -L ${LOCAL_PORT}:${PORT_FORWARD_HOST}:3389
