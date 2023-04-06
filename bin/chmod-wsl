@@ -1,0 +1,14 @@
+#!/bin/sh -eux
+
+# 指定したディレクトリ以下のファイル・ディレクトリのパーミッションを調整する。
+# ファイル：644
+# ディレクトリ：755
+
+if [ $# -eq 0 ]
+then
+  echo "Usage: $0 <base directory>"
+  exit 1
+fi
+
+find $1 -type f -exec chmod 644 '{}' \;
+find $1 -type d -exec chmod 755 '{}' \;

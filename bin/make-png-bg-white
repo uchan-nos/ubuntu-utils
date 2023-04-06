@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# 透過背景の PNG 画像を白背景にする。
+
+if [ $# -eq 0 ]
+then
+  echo "Usage: $0 <file name>"
+  exit 1
+fi
+
+convert "$1" -background white -alpha remove -alpha off "$1"
