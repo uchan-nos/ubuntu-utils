@@ -1,0 +1,62 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+  echo "Usage: $0 <file>"
+  echo "  Env: LANG_TYPE  override language (e.g. rust, python, c)"
+  exit 1
+fi
+
+script_dir=$(dirname $0)
+target_file="$1"
+
+if [ -n "$LANG_TYPE" ]
+then
+  lang="$LANG_TYPE"
+else
+  ext="${target_file##*.}"
+  case "$ext" in
+    c)             lang=c ;;
+    h)             lang=c ;;
+    cpp|cc|cxx)    lang=cpp ;;
+    hpp|hh|hxx)    lang=cpp ;;
+    rs)            lang=rust ;;
+    py)            lang=python ;;
+    js)            lang=javascript ;;
+    ts)            lang=typescript ;;
+    go)            lang=go ;;
+    java)          lang=java ;;
+    sh|bash)       lang=bash ;;
+    rb)            lang=ruby ;;
+    pl)            lang=perl ;;
+    lua)           lang=lua ;;
+    toml)          lang=toml ;;
+    yaml|yml)      lang=yaml ;;
+    json)          lang=json ;;
+    xml)           lang=xml ;;
+    html|htm)      lang=html ;;
+    css)           lang=css ;;
+    md)            lang=markdown ;;
+    v|sv)          lang=systemverilog ;;
+    veryl)         lang=veryl ;;
+    *)             lang="" ;;
+  esac
+fi
+
+tmp_typ=$(mktemp ./code-to-pdf_XXXX.typ)
+trap 'rm -f "$tmp_typ"' EXIT
+
+cp "$script_dir/code-to-pdf.typ" "$tmp_typ"
+
+syntax_opt=""
+if [ "$lang" = "veryl" ]
+then
+  syntax_file="veryl.sublime-syntax"
+  syntax_opt="--input syntax=$syntax_file"
+  if [ ! -e "$syntax_file" ]
+  then
+    wget "https://raw.githubusercontent.com/veryl-lang/veryl/refs/heads/master/support/sublime/$syntax_file"
+  fi
+fi
+
+typst compile --root . --input target="$target_file" --input lang="$lang" $syntax_opt "$tmp_typ" "$target_file.pdf"
