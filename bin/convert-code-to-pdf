@@ -10,6 +10,21 @@ fi
 script_dir=$(dirname $0)
 target_file="$1"
 
+abs_target=$(realpath "$target_file")
+if git_root=$(git -C "$(dirname "$abs_target")" rev-parse --show-toplevel 2>/dev/null)
+then
+  git_root_parent=$(dirname "$git_root")
+  label="${abs_target#$git_root_parent/}"
+  commit=$(git -C "$git_root" log -1 --format="%h (%ad)" --date=format:%Y-%m-%d HEAD 2>/dev/null)
+  if [ -n "$commit" ] && [ -n "$(git -C "$git_root" status --porcelain -- "$abs_target")" ]
+  then
+    commit="$commit（変更有り）"
+  fi
+else
+  label="$target_file"
+  commit=""
+fi
+
 if [ -n "$LANG_TYPE" ]
 then
   lang="$LANG_TYPE"
@@ -59,4 +74,4 @@ then
   fi
 fi
 
-typst compile --root . --input target="$target_file" --input lang="$lang" $syntax_opt "$tmp_typ" "$target_file.pdf"
+typst compile --root . --input target="$target_file" --input label="$label" --input commit="$commit" --input lang="$lang" $syntax_opt "$tmp_typ" "$target_file.pdf"

@@ -3,8 +3,12 @@
 #import "@preview/zebraw:0.6.3": *
 
 #let target-file = sys.inputs.at("target", default: "")
+#let label-text = sys.inputs.at("label", default: target-file)
+#let commit-text = sys.inputs.at("commit", default: "")
 #let lang-type = sys.inputs.at("lang", default: none)
 #let syntax-file = sys.inputs.at("syntax", default: ())
+
+#set text(font: ("Arial", "Yu Gothic", "MS Gothic"))
 
 #set page(
   paper: "a4",
@@ -16,7 +20,13 @@
     let i = counter(page).get().first()
     let am = counter(page).final().first()
     set text(8pt, fill: luma(127))
-    [File: #target-file #h(2em) Page: #i / #am]
+    grid(
+      columns: (1fr, 1fr, 1fr),
+      align: (left, center, right),
+      [File: #label-text],
+      [Page: #i / #am],
+      if commit-text != "" [Commit: #commit-text],
+    )
   },
 )
 
@@ -24,7 +34,7 @@
   // 読み込み実行
   if target-file != "" {
     // zebraw が文字を描画するため、set text はここで指定する
-    set text(font: "Myrica M", size: 8pt)
+    show raw: set text(font: "Myrica M", size: 8pt)
     block(
       stroke: 0.5pt,
       clip: true,
